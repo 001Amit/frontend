@@ -18,7 +18,7 @@ export default function Navbar() {
         
         {/* LOGO */}
         <Link to="/" className="logo">
-          DailyNeeds
+          DeailyNeeds
         </Link>
 
         {/* 🔎 SEARCH BAR (Only for customers or guest users) */}
@@ -67,3 +67,4 @@ export default function Navbar() {
     </header>
   );
 }
+
