@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <h1>Daily Needs</h1>
+        <h1>Deaily Needs Carts</h1>
         <p>Secure payments · Trusted sellers · Fast delivery</p>
       </section>
 
@@ -68,3 +68,4 @@ export default function Home() {
     </>
   );
 }
+
