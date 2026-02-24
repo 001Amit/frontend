@@ -1,0 +1,25 @@
+.footer {
+  background: #0f172a; /* Dark slate */
+  color: #cbd5f5;
+  padding: 50px 20px;
+  margin-top: 60px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.footer h4 {
+  color: #fff;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.footer p {
+  font-size: 14px;
+  opacity: 0.8;
+}

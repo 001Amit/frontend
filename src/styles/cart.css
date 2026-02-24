@@ -1,0 +1,170 @@
+/* ================= CART PAGE ================= */
+
+.cart-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 24px;
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.cart-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.cart-empty {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ITEMS */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.cart-item-image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cart-item-price {
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.cart-item-actions {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-item-actions input {
+  width: 60px;
+  text-align: center;
+}
+
+/* REMOVE */
+.remove-btn {
+  background: none;
+  padding: 0;
+  color: #ef4444;
+  font-size: 14px;
+}
+
+.remove-btn:hover {
+  text-decoration: underline;
+}
+
+/* COUPON */
+.coupon-box {
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+}
+
+.coupon-box input {
+  flex: 1;
+}
+
+/* SUMMARY */
+.cart-summary {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-summary h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* CHECKOUT */
+.checkout-btn {
+  padding: 12px 20px;
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--secondary)
+  );
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .cart-item {
+    flex-direction: column;
+  }
+
+  .cart-summary {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+/* ================= QUANTITY CONTROLS ================= */
+
+.qty-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: var(--text);
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.qty-btn:hover {
+  background: #e5e7eb;
+}
+
+.qty-value {
+  min-width: 24px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
