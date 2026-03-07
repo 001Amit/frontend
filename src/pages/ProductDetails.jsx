@@ -128,12 +128,11 @@ export default function ProductDetails() {
 
       {/* ================= REVIEWS SECTION ================= */}
       <div className="product-reviews">
-        {canReview && (
           <AddReview
             productId={product._id}
             onSuccess={() => setRefreshReviews((p) => !p)}
           />
-        )}
+        
 
         <ReviewList
           productId={product._id}
@@ -143,3 +142,4 @@ export default function ProductDetails() {
     </div>
   );
 }
+
