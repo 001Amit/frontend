@@ -11,22 +11,26 @@ export default function AddReview({ productId, onSuccess }) {
   const submitReview = async () => {
     try {
       setLoading(true);
- 
+
       const formData = new FormData();
-      formData.append("productId", productId); 
+      formData.append("productId", productId);
       formData.append("rating", rating);
       formData.append("comment", comment);
 
-      for (let img of images) {
+      images.forEach((img) => {
         formData.append("images", img);
-      }
+      });
 
       await addReviewAPI(formData);
 
-      toast.success("Review added");
+      toast.success("Review added successfully");
+
       setComment("");
       setImages([]);
+      setRating(5);
+
       onSuccess?.();
+
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Failed to add review"
@@ -41,7 +45,10 @@ export default function AddReview({ productId, onSuccess }) {
       <h3>Write a Review</h3>
 
       <label>Rating</label>
-      <select value={rating} onChange={(e) => setRating(e.target.value)}>
+      <select
+        value={rating}
+        onChange={(e) => setRating(Number(e.target.value))}
+      >
         {[5, 4, 3, 2, 1].map((r) => (
           <option key={r} value={r}>
             {r} Stars
