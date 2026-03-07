@@ -14,6 +14,7 @@ export default function Login() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   /* ================= VALIDATION ================= */
 
@@ -52,7 +53,6 @@ export default function Login() {
     const res = await dispatch(loginUser(form));
     setLoading(false);
 
-    // 🔐 RATE LIMIT RESPONSE
     if (res?.error?.status === 429) {
       toast.error("Too many login attempts. Please try again later.");
       return;
@@ -77,27 +77,38 @@ export default function Login() {
     <div className="max-w-md mx-auto mt-10 p-6 border">
       <h2 className="text-xl mb-4">Login</h2>
 
-      <form onSubmit={submitHandler}>
+      <form onSubmit={submitHandler} className="space-y-4">
         <input
           placeholder="Email"
-          className="input"
+          className="input w-full"
           value={form.email}
           onChange={(e) =>
             setForm({ ...form, email: e.target.value })
           }
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="input"
-          value={form.password}
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
-        />
+        {/* PASSWORD FIELD */}
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="input w-full pr-10"
+            value={form.password}
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
+          />
 
-        <button className="btn" disabled={loading}>
+          <button
+            type="button"
+            className="absolute right-2 top-2 text-sm text-gray-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
+        <button className="btn w-full" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
