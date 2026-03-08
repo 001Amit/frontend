@@ -7,29 +7,33 @@ export default function useCanReview(productId) {
   useEffect(() => {
     if (!productId) return;
 
-    const checkReview = async () => {
+    const check = async () => {
       try {
         const res = await api.get("/orders/my");
         const orders = res.data.orders || [];
 
         const eligible = orders.some((order) =>
-          order.items.some(
-            (item) =>
-              item.product?.toString() === productId &&
+          order.items.some((item) => {
+            const itemProductId =
+              typeof item.product === "object"
+                ? item.product._id
+                : item.product;
+
+            return (
+              itemProductId?.toString() === productId.toString() &&
               item.status === "DELIVERED"
-          )
+            );
+          })
         );
 
         setCanReview(eligible);
-
-      } catch (error) {
-        console.error("Review eligibility error:", error);
+      } catch (err) {
+        console.error("canReview error:", err);
         setCanReview(false);
       }
     };
 
-    checkReview();
-
+    check();
   }, [productId]);
 
   return canReview;
