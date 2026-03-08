@@ -128,18 +128,28 @@ export default function ProductDetails() {
 
       {/* ================= REVIEWS SECTION ================= */}
       <div className="product-reviews">
-          <AddReview
-            productId={product._id}
-            onSuccess={() => setRefreshReviews((p) => !p)}
-          />
-        
+           {/* Show review form only if user is eligible */}
+  {canReview && (
+    <AddReview
+      productId={product._id}
+      onSuccess={() => setRefreshReviews((p) => !p)}
+    />
+  )}
 
-        <ReviewList
-          productId={product._id}
-          refresh={refreshReviews}
-        />
+  {/* Optional message */}
+  {!canReview && User && (
+    <p className="review-note">
+      Only customers who received this product can write a review.
+    </p>
+  )}
+
+  <ReviewList
+    productId={product._id}
+    refresh={refreshReviews}
+  />
       </div>
     </div>
   );
 }
+
 
