@@ -139,7 +139,7 @@ export default function ProductDetails() {
   {/* Optional message */}
   {!canReview && User && (
     <p className="review-note">
-      Only customers who received this product can write a review.
+      No reviews yet.
     </p>
   )}
 
@@ -151,5 +151,6 @@ export default function ProductDetails() {
     </div>
   );
 }
+
 
 
