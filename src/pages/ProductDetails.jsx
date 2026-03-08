@@ -16,15 +16,17 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 export default function ProductDetails() {
+
   const { id } = useParams();
   const dispatch = useDispatch();
+
   const { product, loading } = useSelector((s) => s.product);
+  const { user } = useSelector((s) => s.auth); // ✅ logged in user
 
   const [variantId, setVariantId] = useState("");
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [refreshReviews, setRefreshReviews] = useState(false);
 
-  // ✅ SAFE hook usage
   const canReview = useCanReview(product?._id);
 
   useEffect(() => {
@@ -51,8 +53,10 @@ export default function ProductDetails() {
 
   return (
     <div className="product-page">
+
       {/* ================= PRODUCT CARD ================= */}
       <div className="product-card">
+
         {/* IMAGE */}
         <div className="product-image-box">
           <Swiper modules={[Navigation]} navigation slidesPerView={1}>
@@ -75,10 +79,12 @@ export default function ProductDetails() {
           <p className="product-price">
             ₹{selectedVariant?.price || product.price}
           </p>
+
           <p className="tax-text">Inclusive of all taxes</p>
 
           <div className="product-section">
             <h3>Product Description</h3>
+
             <p className={showFullDesc ? "" : "clamp-4"}>
               {product.description}
             </p>
@@ -93,8 +99,10 @@ export default function ProductDetails() {
             )}
           </div>
 
+          {/* VARIANTS */}
           {product.variants?.length > 0 && (
             <div className="variant-box">
+
               <label>Select Size & Color</label>
 
               <select
@@ -110,49 +118,54 @@ export default function ProductDetails() {
 
               {selectedVariant && (
                 <p className="variant-selected">
-                  Selected: <strong>{selectedVariant.size}</strong>,{" "}
-                  <strong>{selectedVariant.color}</strong>
+                  Selected:
+                  <strong> {selectedVariant.size}</strong>,
+                  <strong> {selectedVariant.color}</strong>
                 </p>
               )}
+
             </div>
           )}
 
+          {/* CART */}
           <div className="cart-box">
             <AddToCart
               productId={product._id}
               variantId={variantId}
             />
           </div>
+
         </div>
       </div>
 
+
       {/* ================= REVIEWS SECTION ================= */}
+
       <div className="product-reviews">
-           {/* Show review form only if user is eligible */}
-  {canReview && (
-    <AddReview
-      productId={product._id}
-      onSuccess={() => setRefreshReviews((p) => !p)}
-    />
-  )}
 
-  {/* Optional message */}
-  {!canReview &&  (
-    <p className="review-note">
-     Only customers who received this product can write a review.
-    </p>
-  )}
+        {/* Review Form */}
+        {canReview && (
+          <AddReview
+            productId={product._id}
+            onSuccess={() => setRefreshReviews((p) => !p)}
+          />
+        )}
 
-  <ReviewList
-    productId={product._id}
-    refresh={refreshReviews}
-  />
+        {/* Message */}
+        {!canReview && user && (
+          <p className="review-note">
+            Only customers who received this product can write a review.
+          </p>
+        )}
+
+        {/* Reviews List */}
+        <ReviewList
+          productId={product._id}
+          refresh={refreshReviews}
+        />
+
       </div>
+
     </div>
   );
 }
-
-
-
-
-
