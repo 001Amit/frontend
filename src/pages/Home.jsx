@@ -2,7 +2,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/product/productSlice";
 import { Link } from "react-router-dom";
-import "../styles/home.css";
+
+const categories = [
+  { name: "Mobiles", img: "https://cdn-icons-png.flaticon.com/128/15/15874.png" },
+  { name: "Fashion", img: "https://cdn-icons-png.flaticon.com/128/892/892458.png" },
+  { name: "Electronics", img: "https://cdn-icons-png.flaticon.com/128/1041/1041886.png" },
+  { name: "Home", img: "https://cdn-icons-png.flaticon.com/128/69/69524.png" },
+  { name: "Beauty", img: "https://cdn-icons-png.flaticon.com/128/1077/1077035.png" },
+];
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -20,43 +27,87 @@ export default function Home() {
   };
 
   return (
-    <>
-      <section className="hero">
-        <h1>Deaily Needs Carts</h1>
-        <p>Secure payments · Trusted sellers · Fast delivery</p>
+    <div className="bg-gray-100 min-h-screen">
+
+      {/* HERO BANNER */}
+      <section className="bg-gradient-to-r from-blue-600 to-blue-400 text-white p-8 rounded-b-2xl shadow-md">
+        <h1 className="text-3xl font-bold">Daily Needs</h1>
+        <p className="mt-2 text-sm opacity-90">
+          Secure payments · Trusted sellers · Fast delivery
+        </p>
       </section>
 
-      <section className="products">
-        <h2>Featured Products</h2>
+      {/* CATEGORIES */}
+      <div className="flex gap-4 overflow-x-auto p-4 bg-white shadow-sm">
+        {categories.map((cat, i) => (
+          <div key={i} className="min-w-[80px] text-center cursor-pointer">
+            <img src={cat.img} className="h-12 mx-auto mb-1" />
+            <p className="text-sm">{cat.name}</p>
+          </div>
+        ))}
+      </div>
 
-        {loading && <p>Loading...</p>}
-        {!loading && !products.length && <p>No products found</p>}
+      {/* PRODUCTS */}
+      <section className="p-5">
+        <h2 className="text-xl font-semibold mb-4">Featured Products</h2>
 
-        <div className="product-grid">
+        {loading && <p className="text-center">Loading...</p>}
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {products.map((p) => (
-            <Link to={`/product/${p._id}`} key={p._id} className="product-card">
-              <img src={p.images?.[0]?.url} alt={p.name} />
-              <h4>{p.name}</h4>
-              <p>⭐ {p.rating || 0}</p>
+            <Link
+              to={`/product/${p._id}`}
+              key={p._id}
+              className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
+            >
+              {/* Discount Badge */}
+              <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                20% OFF
+              </span>
+
+              <img
+                src={p.images?.[0]?.url}
+                alt={p.name}
+                className="h-40 w-full object-contain mb-2"
+              />
+
+              <h4 className="text-sm font-medium line-clamp-2">
+                {p.name}
+              </h4>
+
+              <p className="text-yellow-500 text-sm mt-1">
+                ⭐ {p.rating || 0}
+              </p>
+
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-blue-600 font-semibold">
+                  ₹{p.price}
+                </span>
+                <span className="text-gray-400 line-through text-sm">
+                  ₹{p.price + 500}
+                </span>
+              </div>
             </Link>
           ))}
         </div>
 
-        {/* ===== PAGINATION ===== */}
+        {/* PAGINATION */}
         {pages > 1 && (
-          <div className="pagination">
+          <div className="flex justify-center items-center gap-4 mt-6">
             <button
+              className="px-4 py-1 bg-white shadow rounded disabled:opacity-50"
               disabled={page === 1}
               onClick={() => changePage(page - 1)}
             >
               Prev
             </button>
 
-            <span>
+            <span className="text-sm font-medium">
               Page {page} of {pages}
             </span>
 
             <button
+              className="px-4 py-1 bg-white shadow rounded disabled:opacity-50"
               disabled={page === pages}
               onClick={() => changePage(page + 1)}
             >
@@ -65,7 +116,6 @@ export default function Home() {
           </div>
         )}
       </section>
-    </>
+    </div>
   );
 }
-
