@@ -42,9 +42,23 @@ export default function Home() {
     if (node) observer.current.observe(node);
   };
 
-  // ✅ SAFE PRICE FUNCTION
+  // ✅ PRICE HELPERS
   const getPrice = (p) => {
     return p.price ?? p.variants?.[0]?.price ?? 0;
+  };
+
+  const getOriginalPrice = (p) => {
+    const price = getPrice(p);
+    return Math.round(price * 1.25); // fake MRP
+  };
+
+  const getDiscount = (p) => {
+    const price = getPrice(p);
+    const original = getOriginalPrice(p);
+
+    if (!original || original <= price) return 0;
+
+    return Math.round(((original - price) / original) * 100);
   };
 
   return (
@@ -92,54 +106,21 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {products.map((p, index) => {
             const price = getPrice(p);
+            const original = getOriginalPrice(p);
+            const discount = getDiscount(p);
 
-            if (products.length === index + 1) {
-              return (
-                <Link
-                  ref={lastProductRef}
-                  to={`/product/${p._id}`}
-                  key={p._id}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
-                >
-                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
-                    20% OFF
-                  </span>
-
-                  <img
-                    src={p.images?.[0]?.url}
-                    alt={p.name}
-                    className="h-40 w-full object-contain mb-2"
-                  />
-
-                  <h4 className="text-sm font-medium line-clamp-2">
-                    {p.name}
-                  </h4>
-
-                  <p className="text-yellow-500 text-sm mt-1">
-                    ⭐ {p.rating || 0}
-                  </p>
-
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-blue-600 font-semibold">
-                      ₹{price}
-                    </span>
-                    <span className="text-gray-400 line-through text-sm">
-                      ₹{price + 500}
-                    </span>
-                  </div>
-                </Link>
-              );
-            }
-
-            return (
+            const card = (
               <Link
                 to={`/product/${p._id}`}
                 key={p._id}
                 className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
               >
-                <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
-                  20% OFF
-                </span>
+                {/* 🔥 DISCOUNT BADGE */}
+                {discount > 0 && (
+                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                    {discount}% OFF
+                  </span>
+                )}
 
                 <img
                   src={p.images?.[0]?.url}
@@ -155,16 +136,32 @@ export default function Home() {
                   ⭐ {p.rating || 0}
                 </p>
 
+                {/* 🔥 PRICE SECTION */}
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-blue-600 font-semibold">
                     ₹{price}
                   </span>
+
                   <span className="text-gray-400 line-through text-sm">
-                    ₹{price + 500}
+                    ₹{original}
+                  </span>
+
+                  <span className="text-green-600 text-xs">
+                    {discount}% off
                   </span>
                 </div>
               </Link>
             );
+
+            if (products.length === index + 1) {
+              return (
+                <div ref={lastProductRef} key={p._id}>
+                  {card}
+                </div>
+              );
+            }
+
+            return card;
           })}
         </div>
 
