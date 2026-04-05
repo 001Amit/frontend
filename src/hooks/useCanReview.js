@@ -34,7 +34,7 @@ export default function useCanReview(productId) {
     };
 
     check();
-  }, [productId]);
+  }, [productId, isAuthenticated]);
 
   return canReview;
 }
