@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/product/productSlice";
 import { Link } from "react-router-dom";
@@ -13,23 +13,39 @@ const categories = [
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { products = [], loading, page, pages } = useSelector(
-    (s) => s.product || {}
-  );
+  const observer = useRef();
+
+  const {
+    products = [],
+    loading,
+    loadingMore,
+    page,
+    pages,
+  } = useSelector((s) => s.product || {});
 
   useEffect(() => {
     dispatch(fetchProducts({ page: 1 }));
   }, [dispatch]);
 
-  const changePage = (newPage) => {
-    if (newPage < 1 || newPage > pages) return;
-    dispatch(fetchProducts({ page: newPage }));
+  // 🔥 Infinite Scroll
+  const lastProductRef = (node) => {
+    if (loadingMore) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && page < pages) {
+        dispatch(fetchProducts({ page: page + 1 }));
+      }
+    });
+
+    if (node) observer.current.observe(node);
   };
 
   return (
     <div className="bg-gray-100 min-h-screen">
 
-      {/* HERO BANNER */}
+      {/* HERO */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-400 text-white p-8 rounded-b-2xl shadow-md">
         <h1 className="text-3xl font-bold">Daily Needs</h1>
         <p className="mt-2 text-sm opacity-90">
@@ -49,70 +65,115 @@ export default function Home() {
 
       {/* PRODUCTS */}
       <section className="p-5">
-        <h2 className="text-xl font-semibold mb-4">Featured Products</h2>
+        <h2 className="text-xl font-semibold mb-4">All Products</h2>
 
-        {loading && <p className="text-center">Loading...</p>}
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {products.map((p) => (
-            <Link
-              to={`/product/${p._id}`}
-              key={p._id}
-              className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
-            >
-              {/* Discount Badge */}
-              <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
-                20% OFF
-              </span>
-
-              <img
-                src={p.images?.[0]?.url}
-                alt={p.name}
-                className="h-40 w-full object-contain mb-2"
-              />
-
-              <h4 className="text-sm font-medium line-clamp-2">
-                {p.name}
-              </h4>
-
-              <p className="text-yellow-500 text-sm mt-1">
-                ⭐ {p.rating || 0}
-              </p>
-
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-blue-600 font-semibold">
-                  ₹{p.price}
-                </span>
-                <span className="text-gray-400 line-through text-sm">
-                  ₹{p.price + 500}
-                </span>
+        {/* 🔥 INITIAL SKELETON */}
+        {loading && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[...Array(10)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white p-3 rounded-xl shadow animate-pulse"
+              >
+                <div className="h-40 bg-gray-300 rounded mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
               </div>
-            </Link>
-          ))}
+            ))}
+          </div>
+        )}
+
+        {/* PRODUCTS GRID */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {products.map((p, index) => {
+            if (products.length === index + 1) {
+              return (
+                <Link
+                  ref={lastProductRef}
+                  to={`/product/${p._id}`}
+                  key={p._id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
+                >
+                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                    20% OFF
+                  </span>
+
+                  <img
+                    src={p.images?.[0]?.url}
+                    alt={p.name}
+                    className="h-40 w-full object-contain mb-2"
+                  />
+
+                  <h4 className="text-sm font-medium line-clamp-2">
+                    {p.name}
+                  </h4>
+
+                  <p className="text-yellow-500 text-sm mt-1">
+                    ⭐ {p.rating || 0}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-blue-600 font-semibold">
+                      ₹{p.price}
+                    </span>
+                    <span className="text-gray-400 line-through text-sm">
+                      ₹{p.price + 500}
+                    </span>
+                  </div>
+                </Link>
+              );
+            }
+
+            return (
+              <Link
+                to={`/product/${p._id}`}
+                key={p._id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-3 relative"
+              >
+                <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                  20% OFF
+                </span>
+
+                <img
+                  src={p.images?.[0]?.url}
+                  alt={p.name}
+                  className="h-40 w-full object-contain mb-2"
+                />
+
+                <h4 className="text-sm font-medium line-clamp-2">
+                  {p.name}
+                </h4>
+
+                <p className="text-yellow-500 text-sm mt-1">
+                  ⭐ {p.rating || 0}
+                </p>
+
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-blue-600 font-semibold">
+                    ₹{p.price}
+                  </span>
+                  <span className="text-gray-400 line-through text-sm">
+                    ₹{p.price + 500}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
-        {/* PAGINATION */}
-        {pages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-6">
-            <button
-              className="px-4 py-1 bg-white shadow rounded disabled:opacity-50"
-              disabled={page === 1}
-              onClick={() => changePage(page - 1)}
-            >
-              Prev
-            </button>
-
-            <span className="text-sm font-medium">
-              Page {page} of {pages}
-            </span>
-
-            <button
-              className="px-4 py-1 bg-white shadow rounded disabled:opacity-50"
-              disabled={page === pages}
-              onClick={() => changePage(page + 1)}
-            >
-              Next
-            </button>
+        {/* 🔥 LOAD MORE SKELETON */}
+        {loadingMore && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white p-3 rounded-xl shadow animate-pulse"
+              >
+                <div className="h-40 bg-gray-300 rounded mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
         )}
       </section>
