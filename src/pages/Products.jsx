@@ -40,7 +40,7 @@ export default function Products() {
 
   // 🔥 INFINITE SCROLL
   const lastProductRef = (node) => {
-    if (loadingMore) return;
+    if (loading || loadingMore) return;
 
     if (observer.current) observer.current.disconnect();
 
