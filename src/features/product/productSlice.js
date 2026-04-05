@@ -5,13 +5,13 @@ import {
   searchAutocompleteAPI,
 } from "./productAPI";
 
-/* ================= FETCH ALL PRODUCTS (PAGINATED) ================= */
+/* ================= FETCH ALL PRODUCTS ================= */
 export const fetchProducts = createAsyncThunk(
   "product/fetchAll",
   async (params = {}, thunkAPI) => {
     try {
       const res = await fetchProductsAPI(params);
-      return res.data; // ✅ return full payload
+      return { ...res.data, page: params.page || 1 }; // 👈 pass page
     } catch (err) {
       return thunkAPI.rejectWithValue("Failed to fetch products");
     }
@@ -50,9 +50,10 @@ const productSlice = createSlice({
     products: [],
     product: null,
     suggestions: [],
-    loading: false,
 
-    // ✅ pagination state
+    loading: false,      // first load
+    loadingMore: false,  // infinite scroll load
+
     page: 1,
     pages: 1,
     total: 0,
@@ -62,19 +63,36 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
       /* -------- ALL PRODUCTS -------- */
-      .addCase(fetchProducts.pending, (s) => {
-        s.loading = true;
+      .addCase(fetchProducts.pending, (s, a) => {
+        if ((a.meta.arg?.page || 1) === 1) {
+          s.loading = true;
+        } else {
+          s.loadingMore = true;
+        }
       })
+
       .addCase(fetchProducts.fulfilled, (s, a) => {
-        s.products = a.payload.products;
+        const newProducts = a.payload.products;
+
+        // ✅ IMPORTANT: append for infinite scroll
+        if (a.payload.page === 1) {
+          s.products = newProducts;
+        } else {
+          s.products = [...s.products, ...newProducts];
+        }
+
         s.page = a.payload.pagination.page;
         s.pages = a.payload.pagination.pages;
         s.total = a.payload.pagination.total;
         s.limit = a.payload.pagination.limit;
+
         s.loading = false;
+        s.loadingMore = false;
       })
+
       .addCase(fetchProducts.rejected, (s) => {
         s.loading = false;
+        s.loadingMore = false;
       })
 
       /* -------- SINGLE PRODUCT -------- */
