@@ -7,21 +7,16 @@ import ReviewList from "../components/reviews/ReviewList";
 import AddReview from "../components/reviews/AddReview";
 import useCanReview from "../hooks/useCanReview";
 
-/* Swiper */
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-/* Swiper styles */
 import "swiper/css";
 import "swiper/css/navigation";
 
 export default function ProductDetails() {
-
   const { id } = useParams();
   const dispatch = useDispatch();
-
   const { product, loading } = useSelector((s) => s.product);
-  const { user } = useSelector((s) => s.auth); // ✅ logged in user
 
   const [variantId, setVariantId] = useState("");
   const [showFullDesc, setShowFullDesc] = useState(false);
@@ -39,8 +34,10 @@ export default function ProductDetails() {
     }
   }, [product]);
 
-  if (loading) return <p className="p-6 text-center">Loading product...</p>;
-  if (!product) return <p className="p-6 text-center">Product not found</p>;
+  if (loading)
+    return <p className="p-6 text-center">Loading product...</p>;
+  if (!product)
+    return <p className="p-6 text-center">Product not found</p>;
 
   const images =
     product.images?.length > 0
@@ -52,46 +49,68 @@ export default function ProductDetails() {
   );
 
   return (
-    <div className="product-page">
+    <div className="bg-gray-100 min-h-screen p-4">
 
-      {/* ================= PRODUCT CARD ================= */}
-      <div className="product-card">
+      {/* ===== MAIN PRODUCT SECTION ===== */}
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-4 grid md:grid-cols-2 gap-6">
 
-        {/* IMAGE */}
-        <div className="product-image-box">
-          <Swiper modules={[Navigation]} navigation slidesPerView={1}>
+        {/* IMAGE SECTION */}
+        <div>
+          <Swiper modules={[Navigation]} navigation>
             {images.map((img, i) => (
               <SwiperSlide key={i}>
                 <img
                   src={img.url}
                   alt={`${product.name}-${i}`}
-                  className="product-image"
+                  className="w-full h-80 object-contain rounded-lg"
                 />
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
 
-        {/* INFO */}
-        <div className="product-info">
-          <h1>{product.name}</h1>
+        {/* INFO SECTION */}
+        <div className="flex flex-col gap-3">
 
-          <p className="product-price">
-            ₹{selectedVariant?.price || product.price}
+          <h1 className="text-2xl font-semibold">
+            {product.name}
+          </h1>
+
+          {/* RATING */}
+          <p className="text-green-600 font-medium">
+            ⭐ {product.rating || 0} Ratings
           </p>
 
-          <p className="tax-text">Inclusive of all taxes</p>
+          {/* PRICE */}
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-bold text-blue-600">
+              ₹{selectedVariant?.price || product.price}
+            </span>
+            <span className="text-gray-400 line-through">
+              ₹{(selectedVariant?.price || product.price) + 500}
+            </span>
+            <span className="text-green-600 text-sm">
+              20% off
+            </span>
+          </div>
 
-          <div className="product-section">
-            <h3>Product Description</h3>
+          <p className="text-sm text-gray-500">
+            Inclusive of all taxes
+          </p>
 
-            <p className={showFullDesc ? "" : "clamp-4"}>
+          {/* DESCRIPTION */}
+          <div>
+            <h3 className="font-semibold mb-1">
+              Product Description
+            </h3>
+
+            <p className={!showFullDesc ? "line-clamp-4 text-gray-700" : "text-gray-700"}>
               {product.description}
             </p>
 
-            {product.description?.length > 300 && (
+            {product.description?.length > 200 && (
               <button
-                className="link-button"
+                className="text-blue-600 text-sm mt-1"
                 onClick={() => setShowFullDesc(!showFullDesc)}
               >
                 {showFullDesc ? "Show less" : "Read more"}
@@ -101,49 +120,46 @@ export default function ProductDetails() {
 
           {/* VARIANTS */}
           {product.variants?.length > 0 && (
-            <div className="variant-box">
-
-              <label>Select Size & Color</label>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <label className="block text-sm font-medium mb-1">
+                Select Variant
+              </label>
 
               <select
                 value={variantId}
                 onChange={(e) => setVariantId(e.target.value)}
+                className="w-full border p-2 rounded"
               >
                 {product.variants.map((v) => (
                   <option key={v._id} value={v._id}>
-                    Size: {v.size} | Color: {v.color} | ₹{v.price}
+                    {v.size} | {v.color} | ₹{v.price}
                   </option>
                 ))}
               </select>
 
               {selectedVariant && (
-                <p className="variant-selected">
-                  Selected:
-                  <strong> {selectedVariant.size}</strong>,
-                  <strong> {selectedVariant.color}</strong>
+                <p className="text-sm mt-2 text-gray-600">
+                  Selected:{" "}
+                  <strong>{selectedVariant.size}</strong>,{" "}
+                  <strong>{selectedVariant.color}</strong>
                 </p>
               )}
-
             </div>
           )}
 
-          {/* CART */}
-          <div className="cart-box">
+          {/* ADD TO CART */}
+          <div className="mt-2">
             <AddToCart
               productId={product._id}
               variantId={variantId}
             />
           </div>
-
         </div>
       </div>
 
+      {/* ===== REVIEWS ===== */}
+      <div className="max-w-6xl mx-auto mt-6 bg-white p-4 rounded-xl shadow-md">
 
-      {/* ================= REVIEWS SECTION ================= */}
-
-      <div className="product-reviews">
-
-        {/* Review Form */}
         {canReview && (
           <AddReview
             productId={product._id}
@@ -151,21 +167,11 @@ export default function ProductDetails() {
           />
         )}
 
-        {/* Message */}
-        {!canReview && user && (
-          <p className="review-note">
-            Only customers who received this product can write a review.
-          </p>
-        )}
-
-        {/* Reviews List */}
         <ReviewList
           productId={product._id}
           refresh={refreshReviews}
         />
-
       </div>
-
     </div>
   );
 }
