@@ -165,7 +165,7 @@ export default function ProductDetails() {
       {/* ===== REVIEWS ===== */}
       <div className="max-w-6xl mx-auto mt-6 bg-white p-4 rounded-xl shadow-md">
 
-        {(!productId || !isAuthenticated) (
+        {!isAuthenticated && canReview && (
           <AddReview
             productId={product._id}
             onSuccess={() => setRefreshReviews((p) => !p)}
