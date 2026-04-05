@@ -29,7 +29,7 @@ export default function Home() {
 
   // 🔥 Infinite Scroll
   const lastProductRef = (node) => {
-    if (loadingMore) return;
+    if (loading || loadingMore) return;
 
     if (observer.current) observer.current.disconnect();
 
