@@ -5,7 +5,7 @@ export default function useCanReview(productId) {
   const [canReview, setCanReview] = useState(false);
 
   useEffect(() => {
-    if (!productId) return;
+    if (!productId || !isAuthenticated) return;
 
     const check = async () => {
       try {
