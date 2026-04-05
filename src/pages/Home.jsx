@@ -42,6 +42,11 @@ export default function Home() {
     if (node) observer.current.observe(node);
   };
 
+  // ✅ SAFE PRICE FUNCTION
+  const getPrice = (p) => {
+    return p.price ?? p.variants?.[0]?.price ?? 0;
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
 
@@ -86,6 +91,8 @@ export default function Home() {
         {/* PRODUCTS GRID */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {products.map((p, index) => {
+            const price = getPrice(p);
+
             if (products.length === index + 1) {
               return (
                 <Link
@@ -114,10 +121,10 @@ export default function Home() {
 
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-blue-600 font-semibold">
-                      ₹{p.price}
+                      ₹{price}
                     </span>
                     <span className="text-gray-400 line-through text-sm">
-                      ₹{p.price + 500}
+                      ₹{price + 500}
                     </span>
                   </div>
                 </Link>
@@ -150,10 +157,10 @@ export default function Home() {
 
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-blue-600 font-semibold">
-                    ₹{p.price}
+                    ₹{price}
                   </span>
                   <span className="text-gray-400 line-through text-sm">
-                    ₹{p.price + 500}
+                    ₹{price + 500}
                   </span>
                 </div>
               </Link>
