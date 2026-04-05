@@ -26,13 +26,18 @@ export default function ProductDetails() {
 
   useEffect(() => {
     dispatch(fetchProduct(id));
-  }, [dispatch, id]);
+  }, [ id]);
 
   useEffect(() => {
     if (product?.variants?.length > 0) {
       setVariantId(product.variants[0]._id);
     }
   }, [product]);
+  useEffect(() => {
+  if (!product || product._id !== id) {
+    dispatch(fetchProduct(id));
+  }
+}, [id]);
 
   if (loading)
     return <p className="p-6 text-center">Loading product...</p>;
