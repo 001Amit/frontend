@@ -23,9 +23,16 @@ export default function Products() {
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("");
   const [price, setPrice] = useState(10000);
+  const hasMore = page < pages;
 
+  const debounceRef = useRef(null);
   // 🔥 FETCH PRODUCTS
   useEffect(() => {
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
+
+  debounceRef.current = setTimeout(() => {
     dispatch(
       fetchProducts({
         page: 1,
@@ -36,7 +43,10 @@ export default function Products() {
         max: price,
       })
     );
-  }, [dispatch, keyword, category, sort, price]);
+  }, 400); // 🔥 delay
+
+  return () => clearTimeout(debounceRef.current);
+}, [dispatch, keyword, category, sort, price]);
 
   // 🔥 INFINITE SCROLL
   const lastProductRef = (node) => {
@@ -45,7 +55,7 @@ export default function Products() {
     if (observer.current) observer.current.disconnect();
 
     observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && page < pages) {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
         dispatch(
           fetchProducts({
             page: page + 1,
