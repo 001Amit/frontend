@@ -66,7 +66,7 @@ export default function Home() {
 
       {/* HERO */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-400 text-white p-8 rounded-b-2xl shadow-md">
-        <h1 className="text-3xl font-bold">Daily Needs</h1>
+        <h1 className="text-3xl font-bold">Deaily Needs</h1>
         <p className="mt-2 text-sm opacity-90">
           Secure payments · Trusted sellers · Fast delivery
         </p>
