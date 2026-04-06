@@ -80,7 +80,7 @@ export default function Login() {
 
         {/* HEADER */}
         <h2 className="text-2xl font-bold text-center mb-6">
-          Welcome Back 👋
+          Welcome
         </h2>
 
         {/* FORM */}
