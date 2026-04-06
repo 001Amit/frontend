@@ -19,6 +19,7 @@ export default function Register() {
 
   const [otp, setOtp] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   /* ================= VALIDATION ================= */
 
@@ -31,36 +32,25 @@ export default function Register() {
     }
 
     if (!/^[A-Za-z\s]{2,}$/.test(name)) {
-      toast.error("Name must contain only letters and be at least 2 characters");
+      toast.error("Enter valid name");
       return false;
     }
 
-    if (!email) {
-      toast.error("Email is required");
-      return false;
-    }
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      toast.error("Please enter a valid email address");
-      return false;
-    }
-
-    if (!password) {
-      toast.error("Password is required");
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      toast.error("Enter valid email");
       return false;
     }
 
     if (
+      !password ||
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)
     ) {
-      toast.error(
-        "Password must be at least 8 characters and include uppercase, lowercase, and a number"
-      );
+      toast.error("Weak password (min 8 chars, upper, lower, number)");
       return false;
     }
 
     if (!["customer", "seller"].includes(role)) {
-      toast.error("Invalid role selected");
+      toast.error("Invalid role");
       return false;
     }
 
@@ -68,20 +58,14 @@ export default function Register() {
   };
 
   const validateOTP = () => {
-    if (!otp) {
-      toast.error("OTP is required");
-      return false;
-    }
-
     if (!/^\d{6}$/.test(otp)) {
-      toast.error("OTP must be a 6-digit number");
+      toast.error("Enter valid 6-digit OTP");
       return false;
     }
-
     return true;
   };
 
-  /* ================= SUBMIT HANDLERS ================= */
+  /* ================= HANDLERS ================= */
 
   const submitRegister = (e) => {
     e.preventDefault();
@@ -101,10 +85,10 @@ export default function Register() {
     );
 
     if (res.meta.requestStatus === "fulfilled") {
-      toast.success("Email verified successfully 🎉");
+      toast.success("Email verified 🎉");
       setOtpVerified(true);
     } else {
-      toast.error(res.payload || "Invalid or expired OTP ❌");
+      toast.error(res.payload || "Invalid OTP");
     }
   };
 
@@ -115,74 +99,153 @@ export default function Register() {
       const timer = setTimeout(() => {
         navigate("/login");
       }, 1500);
-
       return () => clearTimeout(timer);
     }
   }, [otpVerified, navigate]);
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded">
-      {!otpSent ? (
-        <form onSubmit={submitRegister}>
-          <h2 className="text-xl mb-4">Register</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-blue-500 px-4">
 
-          <input
-            placeholder="Name"
-            required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, name: e.target.value })
-            }
-          />
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 md:p-8">
 
-          <input
-            placeholder="Email"
-            type="email"
-            required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, email: e.target.value })
-            }
-          />
+        {!otpSent ? (
+          <>
+            {/* HEADER */}
+            <h2 className="text-2xl font-bold text-center mb-6">
+              Create Account 🚀
+            </h2>
 
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            onChange={(e) =>
-              setRegisterData({ ...registerData, password: e.target.value })
-            }
-          />
+            {/* FORM */}
+            <form onSubmit={submitRegister} className="space-y-5">
 
-          <select
-            value={registerData.role}
-            onChange={(e) =>
-              setRegisterData({ ...registerData, role: e.target.value })
-            }
-          >
-            <option value="customer">Customer</option>
-            <option value="seller">Seller</option>
-          </select>
+              {/* NAME */}
+              <div>
+                <label className="text-sm text-gray-600">Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  onChange={(e) =>
+                    setRegisterData({
+                      ...registerData,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={submitOTP}>
-          <h2 className="text-xl mb-4">Verify Email</h2>
+              {/* EMAIL */}
+              <div>
+                <label className="text-sm text-gray-600">Email</label>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  onChange={(e) =>
+                    setRegisterData({
+                      ...registerData,
+                      email: e.target.value,
+                    })
+                  }
+                />
+              </div>
 
-          <input
-            placeholder="Enter OTP"
-            value={otp}
-            maxLength={6}
-            required
-            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-          />
+              {/* PASSWORD */}
+              <div>
+                <label className="text-sm text-gray-600">Password</label>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Verifying..." : "Verify OTP"}
-          </button>
-        </form>
-      )}
+                <div className="relative mt-1">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create password"
+                    className="w-full px-4 py-2 border rounded-lg pr-12 focus:ring-2 focus:ring-blue-500 outline-none"
+                    onChange={(e) =>
+                      setRegisterData({
+                        ...registerData,
+                        password: e.target.value,
+                      })
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="absolute right-3 top-2 text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
+
+              {/* ROLE */}
+              <div>
+                <label className="text-sm text-gray-600">Account Type</label>
+
+                <select
+                  value={registerData.role}
+                  onChange={(e) =>
+                    setRegisterData({
+                      ...registerData,
+                      role: e.target.value,
+                    })
+                  }
+                  className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="customer">Customer</option>
+                  <option value="seller">Seller</option>
+                </select>
+              </div>
+
+              {/* BUTTON */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-60"
+              >
+                {loading ? "Creating account..." : "Register"}
+              </button>
+            </form>
+
+            {/* FOOTER */}
+            <p className="text-sm text-center text-gray-500 mt-5">
+              Already have an account?{" "}
+              <span
+                onClick={() => navigate("/login")}
+                className="text-blue-600 cursor-pointer hover:underline"
+              >
+                Login
+              </span>
+            </p>
+          </>
+        ) : (
+          <>
+            {/* OTP SCREEN */}
+            <h2 className="text-2xl font-bold text-center mb-6">
+              Verify Email 📩
+            </h2>
+
+            <form onSubmit={submitOTP} className="space-y-5">
+              <input
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                maxLength={6}
+                onChange={(e) =>
+                  setOtp(e.target.value.replace(/\D/g, ""))
+                }
+                className="w-full px-4 py-2 border rounded-lg text-center tracking-widest text-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
     </div>
   );
 }
