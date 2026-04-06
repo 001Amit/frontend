@@ -17,13 +17,13 @@ export default function Navbar() {
 
         {/* LOGO */}
         <Link to="/" className="text-xl font-bold tracking-wide">
-          Daily<span className="text-yellow-300">Needs</span>
+          Deaily<span className="text-yellow-300">Needs</span>
         </Link>
 
         {/* SEARCH BAR */}
         {(!isAuthenticated || user?.role === "customer") && (
           <div className="hidden md:flex flex-1 mx-6">
-            <div className="w-full bg-white rounded-lg overflow-hidden">
+            <div className="w-full bg-black rounded-lg overflow-hidden">
               <SearchBar />
             </div>
           </div>
