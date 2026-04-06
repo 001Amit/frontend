@@ -74,44 +74,81 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border">
-      <h2 className="text-xl mb-4">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-500 px-4">
+      
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 md:p-8">
 
-      <form onSubmit={submitHandler} className="space-y-4">
-        <input
-          placeholder="Email"
-          className="input w-full"
-          value={form.email}
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-        />
+        {/* HEADER */}
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Welcome Back 👋
+        </h2>
 
-        {/* PASSWORD FIELD */}
-        <div className="relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="input w-full pr-10"
-            value={form.password}
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-          />
+        {/* FORM */}
+        <form onSubmit={submitHandler} className="space-y-5">
 
+          {/* EMAIL */}
+          <div>
+            <label className="text-sm font-medium text-gray-600">
+              Email
+            </label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <label className="text-sm font-medium text-gray-600">
+              Password
+            </label>
+
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="w-full px-4 py-2 border rounded-lg pr-12 focus:ring-2 focus:ring-blue-500 outline-none"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+              />
+
+              <button
+                type="button"
+                className="absolute right-3 top-2 text-sm text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          {/* BUTTON */}
           <button
-            type="button"
-            className="absolute right-2 top-2 text-sm text-gray-600"
-            onClick={() => setShowPassword(!showPassword)}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-60"
+            disabled={loading}
           >
-            {showPassword ? "Hide" : "Show"}
+            {loading ? "Logging in..." : "Login"}
           </button>
-        </div>
+        </form>
 
-        <button className="btn w-full" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+        {/* FOOTER */}
+        <p className="text-sm text-center text-gray-500 mt-5">
+          Don’t have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-blue-600 cursor-pointer hover:underline"
+          >
+            Register
+          </span>
+        </p>
+      </div>
     </div>
   );
 }
