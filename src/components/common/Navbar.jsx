@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* SEARCH BAR */}
         {(!isAuthenticated || user?.role === "customer") && (
           <div className="hidden md:flex flex-1 mx-6">
-            <div className="w-full bg-black rounded-lg overflow-hidden">
+            <div className="w-full bg-white rounded-lg overflow-hidden">
               <SearchBar />
             </div>
           </div>
