@@ -117,9 +117,10 @@ export default function Products() {
 
         {/* 🔥 SIDEBAR */}
         <div
-          className={`fixed md:static top-0 left-0 h-full md:h-auto w-3/4 md:w-auto bg-white p-4 shadow z-50 transform ${
-            showFilters ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300`}
+        className={`fixed md:sticky top-0 md:top-20 left-0 h-full md:h-fit 
+          w-64 md:w-full bg-white p-4 shadow z-50 
+          transform ${showFilters ? "translate-x-0" : "-translate-x-full md:translate-x-0"} 
+          transition-transform duration-300`}
         >
           {/* CLOSE BUTTON (MOBILE) */}
           <button
