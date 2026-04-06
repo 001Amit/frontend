@@ -7,6 +7,7 @@ export default function Products() {
   const dispatch = useDispatch();
   const location = useLocation();
   const observer = useRef();
+  const debounceRef = useRef(null);
 
   const {
     products = [],
@@ -23,30 +24,31 @@ export default function Products() {
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("");
   const [price, setPrice] = useState(10000);
+
+  // 🔥 MOBILE SIDEBAR
+  const [showFilters, setShowFilters] = useState(false);
+
   const hasMore = page < pages;
 
-  const debounceRef = useRef(null);
-  // 🔥 FETCH PRODUCTS
+  // 🔥 FETCH PRODUCTS (DEBOUNCED)
   useEffect(() => {
-  if (debounceRef.current) {
-    clearTimeout(debounceRef.current);
-  }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-  debounceRef.current = setTimeout(() => {
-    dispatch(
-      fetchProducts({
-        page: 1,
-        keyword,
-        category,
-        sort,
-        min: 0,
-        max: price,
-      })
-    );
-  }, 400); // 🔥 delay
+    debounceRef.current = setTimeout(() => {
+      dispatch(
+        fetchProducts({
+          page: 1,
+          keyword,
+          category,
+          sort,
+          min: 0,
+          max: price,
+        })
+      );
+    }, 400);
 
-  return () => clearTimeout(debounceRef.current);
-}, [dispatch, keyword, category, sort, price]);
+    return () => clearTimeout(debounceRef.current);
+  }, [dispatch, keyword, category, sort, price]);
 
   // 🔥 INFINITE SCROLL
   const lastProductRef = (node) => {
@@ -83,10 +85,49 @@ export default function Products() {
   return (
     <div className="bg-gray-100 min-h-screen p-4">
 
-      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-4">
+      {/* 🔥 MOBILE FILTER BUTTON */}
+      <div className="md:hidden mb-4 flex justify-between">
+        <button
+          onClick={() => setShowFilters(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Filters
+        </button>
+
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">Sort</option>
+          <option value="price">Low → High</option>
+          <option value="-price">High → Low</option>
+        </select>
+      </div>
+
+      {/* 🔥 OVERLAY */}
+      {showFilters && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
 
         {/* 🔥 SIDEBAR */}
-        <div className="bg-white p-4 rounded-xl shadow h-fit sticky top-20">
+        <div
+          className={`fixed md:static top-0 left-0 h-full md:h-auto w-3/4 md:w-auto bg-white p-4 shadow z-50 transform ${
+            showFilters ? "translate-x-0" : "-translate-x-full"
+          } transition-transform duration-300`}
+        >
+          {/* CLOSE BUTTON (MOBILE) */}
+          <button
+            className="md:hidden mb-3 text-red-500"
+            onClick={() => setShowFilters(false)}
+          >
+            Close
+          </button>
 
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-semibold">Filters</h2>
@@ -155,7 +196,6 @@ export default function Products() {
             {keyword ? `Search: ${keyword}` : "All Products"}
           </h1>
 
-          {/* LOADING */}
           {loading && <p>Loading...</p>}
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -195,7 +235,6 @@ export default function Products() {
             })}
           </div>
 
-          {/* LOAD MORE */}
           {loadingMore && (
             <p className="text-center mt-4">Loading more...</p>
           )}
