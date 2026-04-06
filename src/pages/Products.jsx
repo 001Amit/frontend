@@ -22,7 +22,7 @@ export default function Products() {
   // 🔥 FILTER STATES
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("");
-  const [price, setPrice] = useState([0, 10000]);
+  const [price, setPrice] = useState(10000);
 
   // 🔥 FETCH PRODUCTS
   useEffect(() => {
@@ -32,8 +32,8 @@ export default function Products() {
         keyword,
         category,
         sort,
-        min: price[0],
-        max: price[1],
+        min: 0,
+        max: price,
       })
     );
   }, [dispatch, keyword, category, sort, price]);
@@ -52,8 +52,8 @@ export default function Products() {
             keyword,
             category,
             sort,
-            min: price[0],
-            max: price[1],
+            min: 0,
+            max: price,
           })
         );
       }
@@ -64,24 +64,39 @@ export default function Products() {
 
   const getPrice = (p) => p.price ?? p.variants?.[0]?.price ?? 0;
 
+  const clearFilters = () => {
+    setCategory("");
+    setSort("");
+    setPrice(10000);
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-4">
 
       <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-4">
 
-        {/* 🔥 FILTER SIDEBAR */}
-        <div className="bg-white p-4 rounded-xl shadow h-fit">
+        {/* 🔥 SIDEBAR */}
+        <div className="bg-white p-4 rounded-xl shadow h-fit sticky top-20">
 
-          <h2 className="font-semibold mb-3">Filters</h2>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="font-semibold">Filters</h2>
+            <button
+              onClick={clearFilters}
+              className="text-sm text-blue-600"
+            >
+              Clear
+            </button>
+          </div>
 
           {/* CATEGORY */}
-          <div className="mb-4">
-            <h3 className="text-sm font-medium mb-1">Category</h3>
-            {["Mobiles", "Fashion", "Electronics", "Home"].map((c) => (
-              <label key={c} className="block text-sm">
+          <div className="mb-5">
+            <h3 className="text-sm font-medium mb-2">Category</h3>
+
+            {["Mobiles", "Fashion", "Electronics", "Home", "Beauty"].map((c) => (
+              <label key={c} className="block text-sm cursor-pointer">
                 <input
                   type="radio"
-                  name="category"
+                  checked={category === c}
                   onChange={() => setCategory(c)}
                 />{" "}
                 {c}
@@ -90,25 +105,29 @@ export default function Products() {
           </div>
 
           {/* PRICE */}
-          <div className="mb-4">
-            <h3 className="text-sm font-medium mb-1">Price</h3>
+          <div className="mb-5">
+            <h3 className="text-sm font-medium mb-2">Price Range</h3>
+
             <input
               type="range"
               min="0"
               max="10000"
-              value={price[1]}
-              onChange={(e) => setPrice([0, Number(e.target.value)])}
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
               className="w-full"
             />
-            <p className="text-sm">Up to ₹{price[1]}</p>
+
+            <p className="text-sm mt-1">Up to ₹{price}</p>
           </div>
 
           {/* SORT */}
           <div>
-            <h3 className="text-sm font-medium mb-1">Sort By</h3>
+            <h3 className="text-sm font-medium mb-2">Sort By</h3>
+
             <select
-              className="border p-2 rounded w-full"
+              value={sort}
               onChange={(e) => setSort(e.target.value)}
+              className="border p-2 rounded w-full"
             >
               <option value="">Default</option>
               <option value="price">Price Low → High</option>
@@ -123,7 +142,7 @@ export default function Products() {
         <div className="md:col-span-3">
 
           <h1 className="text-xl font-semibold mb-4">
-            {keyword ? `Search: ${keyword}` : "Products"}
+            {keyword ? `Search: ${keyword}` : "All Products"}
           </h1>
 
           {/* LOADING */}
@@ -143,9 +162,11 @@ export default function Products() {
                     src={p.images?.[0]?.url}
                     className="h-40 w-full object-contain"
                   />
+
                   <h3 className="text-sm mt-2 line-clamp-2">
                     {p.name}
                   </h3>
+
                   <p className="text-blue-600 font-semibold">
                     ₹{price}
                   </p>
