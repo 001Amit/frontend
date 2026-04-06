@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function SearchBar() {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ inside component
+  const navigate = useNavigate();
   const { suggestions } = useSelector((s) => s.product);
 
   const [q, setQ] = useState("");
@@ -23,7 +23,7 @@ export default function SearchBar() {
     if (!keyword.trim()) return;
 
     dispatch(fetchProducts({ keyword }));
-    navigate(`/products?keyword=${keyword}`); // ✅ navigate to products page
+    navigate(`/products?keyword=${keyword}`);
     setQ("");
   };
 
@@ -33,23 +33,24 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full max-w-xl">
       <form onSubmit={handleSubmit}>
         <input
           value={q}
           onChange={onChange}
           placeholder="Search products..."
-          className="border p-2 w-full"
+          className="w-full px-4 py-2 bg-white text-black placeholder-gray-400 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </form>
 
+      {/* 🔥 SUGGESTIONS */}
       {suggestions.length > 0 && q.length > 1 && (
-        <ul className="absolute bg-white border w-full z-50">
+        <ul className="absolute bg-white border w-full mt-1 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
           {suggestions.map((s) => (
             <li
               key={s._id}
               onClick={() => handleSearch(s.name)}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
+              className="p-2 hover:bg-gray-100 cursor-pointer text-black"
             >
               {s.name}
             </li>
