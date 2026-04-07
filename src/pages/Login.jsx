@@ -220,6 +220,13 @@ export default function Login() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
+            <button
+                  type="button"
+                  className="absolute right-3 top-2 text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  👁️
+                </button>
 
             <button
               onClick={resetPasswordHandler}
