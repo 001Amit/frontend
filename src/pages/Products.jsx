@@ -140,21 +140,7 @@ export default function Products() {
             </button>
           </div>
 
-          {/* CATEGORY */}
-          <div className="mb-5">
-            <h3 className="text-sm font-medium mb-2">Category</h3>
 
-            {["Mobiles", "Fashion", "Electronics", "Home", "Beauty"].map((c) => (
-              <label key={c} className="block text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={category === c}
-                  onChange={() => setCategory(c)}
-                />{" "}
-                {c}
-              </label>
-            ))}
-          </div>
 
           {/* PRICE */}
           <div className="mb-5">
